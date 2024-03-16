@@ -1,6 +1,8 @@
 package com.assignment.players.service;
 
-import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -12,11 +14,18 @@ import java.util.List;
 @Service
 public class PlayerService {
 
-    public List<String[]> readAllLines(Path filePath) throws Exception {
-        try (Reader reader = Files.newBufferedReader(filePath)) {
-            try (CSVReader csvReader = new CSVReader(reader)) {
-                return csvReader.readAll();
-            }
+    public <T> List<T> readCsvToBeanList(Path path, Class clazz, List<T> list) throws Exception {
+        HeaderColumnNameMappingStrategy ms = new HeaderColumnNameMappingStrategy();
+        ms.setType(clazz);
+
+        try (Reader reader = Files.newBufferedReader(path)) {
+            CsvToBean cb = new CsvToBeanBuilder(reader)
+                    .withType(clazz)
+                    .withMappingStrategy(ms)
+                    .build();
+
+            list = cb.parse();
         }
+        return list;
     }
 }
