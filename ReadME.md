@@ -8,4 +8,9 @@
     - This enables easy access to all players or to get a player by ID with O(1) complexity instead of O(N).
 
 ## Database
-- If using a database, consider using the player ID as the index for efficient retrieval.
+- If using a database, player ID would be used as the index for efficient retrieval.
+
+
+## Pagination Support
+- Implement pagination for displaying players, allowing users to navigate through a large list of players efficiently.
+  - Use limit and offset parameters or cursor-based pagination depending on the requirements.
