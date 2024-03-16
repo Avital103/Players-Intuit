@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,7 +29,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {PlayersControllerTest.class})
-class PlayersControllerTest {
+public class PlayersControllerTest {
 
     private MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -44,8 +43,6 @@ class PlayersControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        MockitoAnnotations.openMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(playersController).build();
 
         for (int i = 1; i <= 4; i++) {
@@ -82,17 +79,15 @@ class PlayersControllerTest {
         }
     }
 
-
     @Test
-    void testGetPlayersSuccesses() throws Exception {
+    public void getPlayersSuccesses() throws Exception {
         when(playerService.getAllPlayers()).thenReturn(playersData.values());
-        String responseStr = mockMvc.perform(MockMvcRequestBuilders
+        String responseStr = String.valueOf(mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/players")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .getResponse());
 
         Collection<Player> jsonResponse = objectMapper.readValue(responseStr, new TypeReference<>() {
         });
@@ -100,23 +95,22 @@ class PlayersControllerTest {
     }
 
     @Test
-    void testGetPlayerById() throws Exception {
+    public void getPlayerById() throws Exception {
         String playerId = "player1";
         when(playerService.getPlayerById(playerId)).thenReturn(playersData.get(playerId));
-        String responseStr = mockMvc.perform(MockMvcRequestBuilders
+        String responseStr = String.valueOf(mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/players/" + playerId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .getResponse());
 
         Player player = objectMapper.readValue(responseStr, Player.class);
         assertEquals(playersData.get(playerId), player);
     }
 
     @Test
-    void testGetPlayerByIdNotFound() throws Exception {
+    public void getPlayerByIdNotFound() throws Exception {
         String playerId = "notfound";
         when(playerService.getPlayerById(playerId)).thenThrow(new ResponseStatusException(NOT_FOUND, "Unable to find player with id: " + playerId));
 
@@ -135,7 +129,7 @@ class PlayersControllerTest {
     public void getPlayerByIdInternalError() {
         try {
             mockMvc.perform(MockMvcRequestBuilders
-                            .get("/api/player/")
+                            .get("/api/players/")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isInternalServerError())
                     .andReturn();
