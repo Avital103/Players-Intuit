@@ -1,30 +1,22 @@
 package com.assignment.players.service;
 
-import com.assignment.players.modal.Player;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
+import com.opencsv.CSVReader;
+import org.springframework.stereotype.Service;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 
+@Service
 public class PlayerService {
 
-    public List<Player> readCsvFile(String filePath) throws IOException {
-        List<Player> players = new ArrayList<>();
-
-        try (Reader reader = new FileReader(filePath);
-             CSVParser csvParser = CSVFormat.DEFAULT.withHeader().parse(reader)) {
-            for (CSVRecord csvRecord : csvParser) {
-                Player player = PlayerMapper.INSTANCE.csvRecordToPlayer(csvRecord);
-                players.add(player);
+    public List<String[]> readAllLines(Path filePath) throws Exception {
+        try (Reader reader = Files.newBufferedReader(filePath)) {
+            try (CSVReader csvReader = new CSVReader(reader)) {
+                return csvReader.readAll();
             }
         }
-
-        return players;
     }
 }
