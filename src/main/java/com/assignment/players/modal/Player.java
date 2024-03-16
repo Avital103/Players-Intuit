@@ -2,10 +2,12 @@ package com.assignment.players.modal;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Player {
 
     @CsvBindByName(column = "playerID")
