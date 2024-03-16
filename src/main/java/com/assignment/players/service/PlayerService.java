@@ -1,31 +1,53 @@
 package com.assignment.players.service;
 
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.assignment.players.modal.Player;
+import com.assignment.players.util.CSVUtils;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 
 @Service
 public class PlayerService {
 
-    public <T> List<T> readCsvToBeanList(Path path, Class clazz, List<T> list) throws Exception {
-        HeaderColumnNameMappingStrategy ms = new HeaderColumnNameMappingStrategy();
-        ms.setType(clazz);
+    private final Map<String, Player> playersData = new HashMap<>();
 
-        try (Reader reader = Files.newBufferedReader(path)) {
-            CsvToBean cb = new CsvToBeanBuilder(reader)
-                    .withType(clazz)
-                    .withMappingStrategy(ms)
-                    .build();
-
-            list = cb.parse();
-        }
-        return list;
+    @PostConstruct
+    public void init() throws Exception {
+        loadAllPlayersData();
     }
+
+    private void loadAllPlayersData() throws Exception {
+        Path path = Paths.get("/Users/aarvivo/Documents/player.csv");
+        List<Player> players = new ArrayList<>();
+        List<Player> allPlayers = CSVUtils.readCsvToBeanList(path, Player.class, players);
+        for (Player player : allPlayers) {
+            playersData.put(player.getPlayerID(), player);
+        }
+    }
+
+    public Collection<Player> getAllPlayers() {
+        return playersData.values();
+    }
+
+
+    public Player getPlayerById(String playerId) {
+        if (playerId == null || playerId.isEmpty()) {
+            return null;
+        }
+
+        Player playerData = playersData.get(playerId);
+        if (playerData == null) {
+            throw new ResponseStatusException(NOT_FOUND, "Unable to find player with id: " + playerId);
+        }
+
+        return playerData;
+    }
+
 }

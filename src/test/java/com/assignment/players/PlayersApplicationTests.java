@@ -1,26 +1,40 @@
 package com.assignment.players;
 
-import com.assignment.players.controller.PlayersController;
-import com.assignment.players.modal.Player;
 import com.assignment.players.service.PlayerService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.assignment.players.modal.Player;
+import com.assignment.players.controller.PlayersController;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = {PlayersControllerTest.class})
 class PlayersControllerTest {
+
+    private MockMvc mockMvc;
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Player> playersData = new HashMap<>(0);
 
     @Mock
     private PlayerService playerService;
@@ -28,14 +42,13 @@ class PlayersControllerTest {
     @InjectMocks
     private PlayersController playersController;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
         MockitoAnnotations.openMocks(this);
-    }
+        this.mockMvc = MockMvcBuilders.standaloneSetup(playersController).build();
 
-    private List<Player> configureMocks(int numberOfPlayers) throws Exception {
-        List<Player> playersResponse = new ArrayList<>();
-        for (int i = 1; i <= numberOfPlayers; i++) {
+        for (int i = 1; i <= 4; i++) {
             String playerId = "player" + i;
             int birthYear = 1877;
             int birthMonth = 4;
@@ -65,44 +78,70 @@ class PlayersControllerTest {
                     debutYear, debutMonth, debutDay, finalGameCountry, finalGameState, finalGameCity,
                     nameFirst, nameLast, nameGiven, height, weight, bats, throwsHand, debut, finalGame,
                     retroID, bbrefID);
-            playersResponse.add(player);
+            playersData.put(player.getPlayerID(), player);
         }
-
-        Path path = Paths.get("/Users/aarvivo/Documents/player.csv");
-        List<Player> players = new ArrayList<>();
-        when(playerService.readCsvToBeanList(path, Player.class, players)).thenReturn(playersResponse);
-        return playersResponse;
     }
 
 
     @Test
-    void testGetPlayers() throws Exception {
-        List<Player> players = configureMocks(3);
-        List<Player> result = playersController.getPlayers();
+    void testGetPlayersSuccesses() throws Exception {
+        when(playerService.getAllPlayers()).thenReturn(playersData.values());
+        String responseStr = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/players")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-        assertEquals(3, result.size());
-        assertEquals(players.get(0), result.get(0));
-        assertEquals(players.get(1), result.get(1));
-        assertEquals(players.get(2), result.get(2));
+        Collection<Player> jsonResponse = objectMapper.readValue(responseStr, new TypeReference<>() {
+        });
+        assertEquals(3, jsonResponse.size());
     }
 
     @Test
     void testGetPlayerById() throws Exception {
-        List<Player> players = configureMocks(4);
-        Player result = playersController.getPlayerById(players.get(3).getPlayerID());
+        String playerId = "player1";
+        when(playerService.getPlayerById(playerId)).thenReturn(playersData.get(playerId));
+        String responseStr = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/players/" + playerId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-        assertEquals(players.get(3), result);
+        Player player = objectMapper.readValue(responseStr, Player.class);
+        assertEquals(playersData.get(playerId), player);
     }
 
     @Test
     void testGetPlayerByIdNotFound() throws Exception {
-        List<Player> players = configureMocks(4);
+        String playerId = "notfound";
+        when(playerService.getPlayerById(playerId)).thenThrow(new ResponseStatusException(NOT_FOUND, "Unable to find player with id: " + playerId));
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            playersController.getPlayerById("NotFound");
-        });
+        try {
+            mockMvc.perform(MockMvcRequestBuilders
+                            .get("/api/players/" + playerId)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound())
+                    .andReturn();
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("Unable to find player with id: " + playerId));
+        }
+    }
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("Unable to find player", exception.getReason());
+    @Test
+    public void getPlayerByIdInternalError() {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders
+                            .get("/api/player/")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isInternalServerError())
+                    .andReturn();
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("Required path variable 'id' is not present."));
+        }
+
     }
 }
