@@ -22,11 +22,11 @@ public class PlayerServiceImpl implements PlayerService {
     private final Map<String, Player> playersData = new HashMap<>();
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         loadAllPlayersData();
     }
 
-    private void loadAllPlayersData() {
+    public void loadAllPlayersData() {
         try {
             log.info("Start loading players info");
             URL resource = getClass().getClassLoader().getResource("player.csv");
@@ -38,8 +38,8 @@ public class PlayerServiceImpl implements PlayerService {
                 playersData.put(player.getPlayerID(), player);
             }
             log.info("Successfully loaded players info");
-        } catch (Exception error){
-            log.error("fail to call file");
+        } catch (Exception error) {
+            log.error("fail to load file: " + error.getMessage());
             throw new PlayerException("ready file failed: " + error.getMessage());
         }
     }
