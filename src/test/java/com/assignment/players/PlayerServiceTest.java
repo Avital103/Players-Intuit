@@ -44,7 +44,7 @@ public class PlayerServiceTest {
     }
 
     @Test
-    void testGetPlayerByIdNotFound() {
+    void testGetPlayerById_NotFoundError() {
         try {
             playerService.getPlayerById("notfound");
         } catch (ResponseStatusException error) {
