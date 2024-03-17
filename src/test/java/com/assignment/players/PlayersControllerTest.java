@@ -110,7 +110,7 @@ public class PlayersControllerTest {
     }
 
     @Test
-    public void getPlayerByIdNotFound() throws Exception {
+    public void getPlayerByIdNotFound() {
         String playerId = "notfound";
         when(playerService.getPlayerById(playerId)).thenThrow(new ResponseStatusException(NOT_FOUND, "Unable to find player with id: " + playerId));
 

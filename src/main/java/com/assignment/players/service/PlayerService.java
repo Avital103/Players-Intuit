@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -24,7 +25,8 @@ public class PlayerService {
     }
 
     private void loadAllPlayersData() throws Exception {
-        Path path = Paths.get("/Users/aarvivo/Documents/player.csv");
+        URL resource = getClass().getClassLoader().getResource("player.csv");
+        Path path = Paths.get(resource.getPath());
         List<Player> players = new ArrayList<>();
         List<Player> allPlayers = CSVUtils.readCsvToBeanList(path, Player.class, players);
         for (Player player : allPlayers) {

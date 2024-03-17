@@ -56,7 +56,6 @@ paths:
 
 ## **Running the Project with Docker:**
 
-Before running this make sure to add the `player.csv` file to root directory.
 1. Run: `docker build -t intuit/playerservice:1.0.0`.
 2. Run: `docker images` and note the image ID.
 3. Run: `docker run -p 8081:8081 -it intuit/playerservice:0.0.1 /bin/sh ${IMAGE ID}` (replace `${IMAGE ID}` with the actual image ID).
