@@ -1,9 +1,9 @@
 package com.assignment.players;
 
-import com.assignment.players.service.PlayerService;
+import com.assignment.players.service.PlayersService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.assignment.players.modal.Player;
+import com.assignment.players.model.Player;
 import com.assignment.players.controller.PlayersController;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class PlayersControllerTest {
     Map<String, Player> playersData = new HashMap<>(0);
 
     @Mock
-    private PlayerService playerService;
+    private PlayersService playersService;
 
     @InjectMocks
     private PlayersController playersController;
@@ -81,7 +81,7 @@ public class PlayersControllerTest {
 
     @Test
     public void getPlayersSuccesses() throws Exception {
-        when(playerService.getAllPlayers()).thenReturn(playersData.values());
+        when(playersService.getAllPlayers()).thenReturn(playersData.values());
         String responseStr = String.valueOf(mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/players")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -97,7 +97,7 @@ public class PlayersControllerTest {
     @Test
     public void getPlayerById() throws Exception {
         String playerId = "player1";
-        when(playerService.getPlayerById(playerId)).thenReturn(playersData.get(playerId));
+        when(playersService.getPlayerById(playerId)).thenReturn(playersData.get(playerId));
         String responseStr = String.valueOf(mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/players/" + playerId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -112,7 +112,7 @@ public class PlayersControllerTest {
     @Test
     public void getPlayerByIdNotFound() {
         String playerId = "notfound";
-        when(playerService.getPlayerById(playerId)).thenThrow(new ResponseStatusException(NOT_FOUND, "Unable to find player with id: " + playerId));
+        when(playersService.getPlayerById(playerId)).thenThrow(new ResponseStatusException(NOT_FOUND, "Unable to find player with id: " + playerId));
 
         try {
             mockMvc.perform(MockMvcRequestBuilders

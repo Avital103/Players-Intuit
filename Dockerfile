@@ -3,8 +3,8 @@ LABEL authors="aarvivo"
 
 ARG JAR_FILE=target/*.jar
 
-COPY ${JAR_FILE} playerservice.jar
+COPY ${JAR_FILE} playersservice.jar
 
-ENTRYPOINT ["java", "-jar", "/playerservice.jar"]
+ENTRYPOINT ["java", "-jar", "/playersservice.jar"]
 
 EXPOSE 8081

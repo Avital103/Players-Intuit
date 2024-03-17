@@ -1,4 +1,4 @@
-package com.assignment.players.modal;
+package com.assignment.players.model;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.AllArgsConstructor;

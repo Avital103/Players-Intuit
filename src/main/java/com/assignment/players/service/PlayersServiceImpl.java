@@ -1,28 +1,28 @@
 package com.assignment.players.service;
 
-import com.assignment.players.exceptions.PlayerException;
-import com.assignment.players.modal.Player;
+import com.assignment.players.exception.PlayersException;
+import com.assignment.players.model.Player;
 import com.assignment.players.util.CSVUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @Slf4j
-public class PlayerServiceImpl implements PlayerService {
+public class PlayersServiceImpl implements PlayersService {
 
     private final Map<String, Player> playersData = new HashMap<>();
 
     @PostConstruct
-    public void init() {
+    private void init() {
         loadAllPlayersData();
     }
 
@@ -40,14 +40,13 @@ public class PlayerServiceImpl implements PlayerService {
             log.info("Successfully loaded players info");
         } catch (Exception error) {
             log.error("fail to load file: " + error.getMessage());
-            throw new PlayerException("ready file failed: " + error.getMessage());
+            throw new PlayersException(INTERNAL_SERVER_ERROR, "fail to load file: " + error.getMessage());
         }
     }
 
     public Collection<Player> getAllPlayers() {
         return playersData.values();
     }
-
 
     public Player getPlayerById(String playerId) {
         if (playerId == null || playerId.isEmpty()) {
@@ -58,7 +57,7 @@ public class PlayerServiceImpl implements PlayerService {
         Player playerData = playersData.get(playerId);
         if (playerData == null) {
             log.error("No player found for: " + playerId);
-            throw new ResponseStatusException(NOT_FOUND, "Unable to find player with id: " + playerId);
+            throw new PlayersException(NOT_FOUND, "Unable to find player with id: " + playerId);
         }
 
         return playerData;

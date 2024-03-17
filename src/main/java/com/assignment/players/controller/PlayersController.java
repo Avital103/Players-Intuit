@@ -1,7 +1,7 @@
 package com.assignment.players.controller;
 
-import com.assignment.players.modal.Player;
-import com.assignment.players.service.PlayerService;
+import com.assignment.players.model.Player;
+import com.assignment.players.service.PlayersService;
 import io.swagger.annotations.Api;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,20 +17,20 @@ import java.util.Collection;
 @RequestMapping("api/players")
 public class PlayersController {
 
-    private final PlayerService playerService;
+    private final PlayersService playersService;
 
-    public PlayersController(PlayerService playerService) {
-        this.playerService = playerService;
+    public PlayersController(PlayersService playersService) {
+        this.playersService = playersService;
     }
 
     @GetMapping()
-    public ResponseEntity<Collection<Player>> getPlayers() throws Exception {
-        return new ResponseEntity<>(playerService.getAllPlayers(), HttpStatus.OK);
+    public ResponseEntity<Collection<Player>> getPlayers() {
+        return new ResponseEntity<>(playersService.getAllPlayers(), HttpStatus.OK);
     }
 
     @GetMapping("/{playerId}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable String playerId) throws Exception {
-        return new ResponseEntity<>(playerService.getPlayerById(playerId), HttpStatus.OK);
+    public ResponseEntity<Player> getPlayerById(@PathVariable String playerId) {
+        return new ResponseEntity<>(playersService.getPlayerById(playerId), HttpStatus.OK);
     }
 
 }
