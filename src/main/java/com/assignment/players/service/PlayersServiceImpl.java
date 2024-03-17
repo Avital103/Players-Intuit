@@ -20,6 +20,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class PlayersServiceImpl implements PlayersService {
 
     private final Map<String, Player> playersData = new HashMap<>();
+    String fileName = "player.csv";
 
     @PostConstruct
     private void init() {
@@ -29,7 +30,7 @@ public class PlayersServiceImpl implements PlayersService {
     private void loadAllPlayersData() {
         try {
             log.info("Start loading players info");
-            URL resource = getClass().getClassLoader().getResource("player.csv");
+            URL resource = getClass().getClassLoader().getResource(fileName);
             assert resource != null;
             Path path = Paths.get(resource.getPath());
             List<Player> players = new ArrayList<>();

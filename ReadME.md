@@ -66,3 +66,4 @@ paths:
 - **Database:** If using a database, use player ID as the index for efficient retrieval.
 - **Pagination Support:** Implement pagination for displaying players, allowing users to navigate through a large list of players efficiently. Use limit and offset parameters or cursor-based pagination depending on requirements.
 - **End-to-End (E2E) Tests:** Implement E2E tests to call the APIs and ensure that each one returns the expected result.
+- **Swagger:** Make open api UI work.
