@@ -43,10 +43,6 @@ public class PlayerServiceTest {
 
     @Test
     void testGetPlayerById() {
-        Player mockPlayer = new Player();
-        mockPlayer.setPlayerID("aardsda01");
-        when(mockPlayerService.getPlayerById("aardsda01")).thenReturn(mockPlayer);
-
         Player result = playerService.getPlayerById("aardsda01");
 
         assertEquals("aardsda01", result.getPlayerID());
