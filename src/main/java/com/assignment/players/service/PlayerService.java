@@ -26,6 +26,7 @@ public class PlayerService {
 
     private void loadAllPlayersData() throws Exception {
         URL resource = getClass().getClassLoader().getResource("player.csv");
+        assert resource != null;
         Path path = Paths.get(resource.getPath());
         List<Player> players = new ArrayList<>();
         List<Player> allPlayers = CSVUtils.readCsvToBeanList(path, Player.class, players);
