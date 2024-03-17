@@ -1,5 +1,6 @@
 package com.assignment.players.controller;
 
+import com.assignment.players.exception.PlayersException;
 import com.assignment.players.model.Player;
 import com.assignment.players.service.PlayersService;
 import io.swagger.annotations.Api;
@@ -25,12 +26,22 @@ public class PlayersController {
 
     @GetMapping()
     public ResponseEntity<Collection<Player>> getPlayers() {
-        return new ResponseEntity<>(playersService.getAllPlayers(), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(playersService.getAllPlayers(), HttpStatus.OK);
+        } catch (Exception error) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{playerId}")
     public ResponseEntity<Player> getPlayerById(@PathVariable String playerId) {
-        return new ResponseEntity<>(playersService.getPlayerById(playerId), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(playersService.getPlayerById(playerId), HttpStatus.OK);
+        } catch (PlayersException error) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception error) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

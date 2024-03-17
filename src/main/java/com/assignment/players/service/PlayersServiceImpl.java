@@ -26,7 +26,7 @@ public class PlayersServiceImpl implements PlayersService {
         loadAllPlayersData();
     }
 
-    public void loadAllPlayersData() {
+    private void loadAllPlayersData() {
         try {
             log.info("Start loading players info");
             URL resource = getClass().getClassLoader().getResource("player.csv");
