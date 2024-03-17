@@ -1,11 +1,10 @@
 package com.assignment.players;
 
 import com.assignment.players.modal.Player;
-import com.assignment.players.service.PlayerService;
+import com.assignment.players.service.PlayerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,16 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PlayerServiceTest {
 
     @InjectMocks
-    private PlayerService playerService;
-
-    @Mock
-    private PlayerService mockPlayerService;
+    private PlayerServiceImpl playerService;
 
     @BeforeEach
     public void setUp() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         MockitoAnnotations.initMocks(this);
 
-        Method postConstruct = PlayerService.class.getDeclaredMethod("init");
+        Method postConstruct = PlayerServiceImpl.class.getDeclaredMethod("init");
         postConstruct.setAccessible(true);
         postConstruct.invoke(playerService);
     }
