@@ -28,6 +28,8 @@ public class PlayersController {
     public ResponseEntity<Collection<Player>> getPlayers() {
         try {
             return new ResponseEntity<>(playersService.getAllPlayers(), HttpStatus.OK);
+        } catch (PlayersException error) {
+            return new ResponseEntity<>(error.getStatusCode());
         } catch (Exception error) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -38,7 +40,7 @@ public class PlayersController {
         try {
             return new ResponseEntity<>(playersService.getPlayerById(playerId), HttpStatus.OK);
         } catch (PlayersException error) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(error.getStatusCode());
         } catch (Exception error) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

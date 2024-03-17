@@ -12,8 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @Slf4j
@@ -52,7 +51,7 @@ public class PlayersServiceImpl implements PlayersService {
     public Player getPlayerById(String playerId) {
         if (playerId == null || playerId.isEmpty()) {
             log.error("No player id found");
-            return null;
+            throw new PlayersException(BAD_REQUEST, "Missing player id");
         }
 
         Player playerData = playersData.get(playerId);
