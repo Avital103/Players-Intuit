@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 public class PlayerServiceTest {
 
